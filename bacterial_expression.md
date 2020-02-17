@@ -1,18 +1,12 @@
-## Bacterial Expression Pipeline
+# Bacterial Expression Pipeline
+**Didn't end up using this analysis - coverage wasn't high enough to provide meaningful output, the most highly expressed genes were rRNAs with both STAR and HISAT2**
 
 ## STAR
 
 #### Creating the Genome Index
+
+**STAR/2.5.3a, gcc/6.1.0**
 ```
-#!/bin/bash
-#SBATCH -J STAR_index
-#SBATCH -t 03:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-
-module load STAR/2.5.3a-foss-2016b
-module load gcc/6.1.0
-
 STAR --runThreadN 16 \
 #uses about 6G mem for every thread
 --runMode genomeGenerate \
@@ -35,7 +29,6 @@ STAR --runThreadN 16 \
 
 #### Mapping
 
-**STAR/2.5.3a, gcc/6.1.0**
 ```
 STAR --runThreadN 16 \
 --genomeDir star_index \
@@ -86,31 +79,14 @@ row.names(counts) <- counts.files[[1]]$V1
 ## HISAT2
 
 #### Index the genomes
+
+**HISAT2/2.0.4**
 ```
-#!/bin/bash
-#SBATCH -J hisat
-#SBATCH -t 01:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH --mail-type=END
-#SBATCH --mail-user=lizhunter@uri.edu
-
-module load HISAT2/2.0.4-foss-2016b
-
 hisat2-build genome.fasta index/index.fna
 ```
+
 ##### Mapping
 ```
-#!/bin/bash
-#SBATCH -J hisat
-#SBATCH -t 10-00:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH --mail-type=END
-#SBATCH --mail-user=lizhunter@uri.edu
-
-module load HISAT2/2.0.4-foss-2016b
-
 hisat2 -p 16 --un-conc results/aligned_hisat -x index.fna \
 -1 forward.fastq \
 -2 reverse.fastq \
@@ -133,19 +109,10 @@ samtools view -S -b hisat.sam > hisat.bam | samtools sort -n hisat.bam -o hisat_
 ```
 
 #### featureCount
+
+**Subread/1.6.3**
 ```
-#!/bin/bash
-#SBATCH -J featurecounts
-#SBATCH -t 10-00:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH --mail-type=END
-#SBATCH --mail-user=lizhunter@uri.edu
-
-module load Subread/1.6.3-foss-2018b
-
 featureCounts -p -T [threads] -t transcript -g gene_id -a prokka.gtf -o bac_count.txt bac.bam
-
 ```
 - can take bam or sam sorted or unsorted
 - make sure the gtf file contig names match the bam/sam file
