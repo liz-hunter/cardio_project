@@ -1,6 +1,9 @@
 # Annotation of C. cionae
 
-## Run Augustus
+## Augustus
+- Used the web server (takes a little over a day)
+- Trained with the transcriptome (proteins and CDS)
+- Ideally should sort for full proteins only
 
 ## MAKER
 
@@ -79,9 +82,9 @@ hmm-assembler.pl my-genome params > my-genome.hmm
 #### Generate AED score cumulative fraction values
 - use AED_cdf_generator.pl
 - the b value sets the interval and .025 is the recommended default
-
+- use the output to make a cumulative fraction graph
 ```
-perl AED_cdf_generator.pl -b 0.025 maker.gff
+perl AED_cdf_generator.pl -b 0.025 maker.gff > AED_scores.txt
 ```
 - The lower the better, AED values represent how well a prediction matches the model (with 0 being a perfect match)
 - Below .5 is ideal for annotation done with a transcriptome reference
@@ -133,7 +136,7 @@ genome=RNA_CAT_combo_v2_1kb.fasta #genome sequence (fasta file or fasta embeded 
 organism_type=eukaryotic #eukaryotic or prokaryotic. Default is eukaryotic
 
 #-----Re-annotation Using MAKER Derived GFF3
-maker_gff=/Users/AlgaeLab/Desktop/LIZ_sucks/Maker/Cardio/RNA_CAT_combo/cardio_combo_maker_out_run2/cardio_combo_maker_out_run2.all.gff #MAKER derived GFF3 file
+maker_gff=cardio_combo_maker_out_run2/cardio_combo_maker_out_run2.all.gff #MAKER derived GFF3 file
 est_pass=1 #use ESTs in maker_gff: 1 = yes, 0 = no
 altest_pass=1 #use alternate organism ESTs in maker_gff: 1 = yes, 0 = no
 protein_pass=1 #use protein alignments in maker_gff: 1 = yes, 0 = no
