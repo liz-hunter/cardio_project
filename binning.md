@@ -1,4 +1,4 @@
-# CAT
+# **CAT** (used for Eukaryotic Binning)
 
 - Download CAT_pack in directory
 - Check ``` CAT_pack/CAT --help ```
@@ -46,8 +46,7 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 
 ``` fasomerecords <in.fasta> <list.txt> <out.fasta> ```
 
-# **Run Metabat**
-##### Metagenomic Binning
+# **Metabat** (Prokaryotic Binning)
 
 ### Make Bowtie database from Assembly
 
@@ -64,70 +63,47 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 module load bowtie2/2.3.0
 
 bowtie2-build --threads 16 -f /users/ehunter6/data/ehunter6/CardioDNA/UnbinAssembly/all_contigs.fasta all_contigs.fna ```
+```
 
 ### Map Trimmed Reads to the Assembly Database
 (the Sam files are the necessary output here)
 
 ```
 #!/bin/bash
-#SBATCH -J Bow_BP4
-#SBATCH --account=epscor-condo
+#SBATCH -J bowtie2
 #SBATCH -t 10:00:00
 #SBATCH -N 1
 #SBATCH -n 16
-#SBATCH --constraint=intel
-#SBATCH --mail-type=END
-#SBATCH --mail-user=liz.hunter1122@gmail.com
 
 module load bowtie2/2.3.0
 
 bowtie2 -p 16 -q --very-sensitive \
---al-conc /users/ehunter6/data/ehunter6/CardioDNA/UnbinAssembly/Meta/BP4_reads.fa \
--x /users/ehunter6/data/ehunter6/CardioDNA/UnbinAssembly/Meta/all_contigs.fna \
---no-unal -S /users/ehunter6/data/ehunter6/CardioDNA/UnbinAssembly/Meta/BP4.sam \
--1 /users/ehunter6/data/ehunter6/CardioDNA/Trim/BP4/BP4_trim_1P.fastq \
--2 /users/ehunter6/data/ehunter6/CardioDNA/Trim/BP4/BP4_trim_2P.fastq
+--al-conc aligned_reads_out.fasta \
+-x full_assembly.fasta \
+--no-unal -S out.sam \
+-1 trimmed_1F.fastq \
+-2 trimmed_1R.fastq \
 ```
 
-### Sam to Bam
+### Sam to Bam + Bam Sort
 
 ```
 #!/bin/bash
 #SBATCH -J samtools
-#SBATCH --account=epscor-condo
-#SBATCH -t 10-00:00:00
+#SBATCH -t 1-00:00:00
 #SBATCH -N 1
 #SBATCH -n 16
-#SBATCH --mail-type=END
-#SBATCH --mail-user=liz.hunter1122@gmail.com
 
 module load samtools/1.9
 
-samtools view -S -b BP4.sam > BamFiles/BP4_paired.bam
-```
-### Bam Sort
-
-```
-#!/bin/bash
-#SBATCH -J samtools
-#SBATCH --account=epscor-condo
-#SBATCH -t 10-00:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH --mail-type=END
-#SBATCH --mail-user=liz.hunter1122@gmail.com
-
-module load samtools
-
-samtools sort BamFiles/BP4_paired.bam -o Bam/BP4_paired_sorted.bam
+samtools view -S -b BP4.sam > BamFiles/BP4_paired.bam && samtools sort BamFiles/BP4_paired.bam -o Bam/BP4_paired_sorted.bam
 ```
 
-### Metabat
-(have to switch to Bluewaves for this)
+### Metabat (used for Prokaryotic binning)
 ```
 #!/bin/bash
-#SBATCH --time=100:00:00  # walltime limit (HH:MM:SS)
-#SBATCH --nodes=1   # number of nodes
+#SBATCH --time=100:00:00
+#SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=20
 
 module load metabat/2.12.1-foss-2018a
@@ -136,27 +112,15 @@ module load checkm/1.0.5
 echo "START"
 date
 
-runMetaBat.sh -m 1500 -o /data3/lanelab/liz/CardioDNA/Metabat/Bin1/bin1 /data3/lanelab/liz/CardioDNA/Metabat/contigs.fasta /data3/lanelab/liz/CardioDNA/Metabat/Bam/*.bam
-checkm lineage_wf -t 20 -x fa /data3/lanelab/liz/CardioDNA/Metabat/Bin1 /data3/lanelab/liz/CardioDNA/Metabat/Bin1/Checkm/
+runMetaBat.sh -m 1500 -o Bin1/bin1 contigs.fasta Bam/*.bam && \
+#makes the depth file
 
-echo "DONE"
-date
-```
+metabat2 -i contigs.fasta -m 1500 -a contigs.fasta.depth.txt -o /Bins/bin1
+#makes bins
 
-```
-#!/bin/bash
-#SBATCH --time=100:00:00  # walltime limit (HH:MM:SS)
-#SBATCH --nodes=1   # number of nodes
-#SBATCH --ntasks-per-node=20
+checkm lineage_wf -t 20 -x fa /Bins/ Bins/Checkm/
+#gives lineage guess for the bins
 
-echo "START"
-date
-
-module load metabat/2.12.1-foss-2018a
-module load checkm/1.0.5
-
-metabat2 -i /data3/lanelab/liz/CardioDNA/Metabat/contigs.fasta -m 1500 -a /data3/lanelab/liz/CardioDNA/Metabat/contigs.fasta.depth.txt -o /data3/lanelab/liz/CardioDNA/Metabat/Bin1/bin1
-checkm lineage_wf -t 20 -x fa /data3/lanelab/liz/CardioDNA/Metabat/Bin1/ /data3/lanelab/liz/CardioDNA/Metabat/Bin1/Checkm/
 
 echo "DONE"
 date
