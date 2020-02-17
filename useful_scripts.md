@@ -38,7 +38,7 @@ awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}'
 ### Count fastq reads
 ``` awk '{s++}END{print s/4}' file.fastq```
 
-### Cool scripts:
+### Cool scripts from way better bioinformaticians:
 - fasomerecords (to pull fasta records - from santiagosnchez)
 - interleave-fasta.py (create an interleaved fasta file with forward and reverse reads - from sebhtml)
 - taxnameconvert.pl (rename trees with a tab separated file - from cibiv)
