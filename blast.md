@@ -9,7 +9,7 @@ n=1; for x in *.fa; do mv $x  $n.fa; n=$(($n+1)); done
 ```
 
 ### Run blast array on Bluewaves/Oscar
-**blast/2.2.31+**
+**blast/2.2.31+ (Bluewaves), blast/2.9.0+ (Oscar)**
 ```
 blastp -query "$SLURM_ARRAY_TASK_ID".fa -db /data3/shared/ncbi-nr/nr \
 -outfmt '6 qseqid sseqid sacc evalue pident' \
