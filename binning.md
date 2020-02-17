@@ -46,7 +46,9 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 
 ``` fasomerecords <in.fasta> <list.txt> <out.fasta> ```
 
-# **Metabat** (Prokaryotic Binning)
+# RNA-Coverage Binning (also used for Eukaryotic Binning)
+
+# **Metabat** (used for Prokaryotic Binning)
 
 ### Make Bowtie database from Assembly
 
@@ -99,7 +101,7 @@ module load samtools/1.9
 samtools view -S -b BP4.sam > BamFiles/BP4_paired.bam && samtools sort BamFiles/BP4_paired.bam -o Bam/BP4_paired_sorted.bam
 ```
 
-### Metabat (used for Prokaryotic binning)
+### Metabat
 ```
 #!/bin/bash
 #SBATCH --time=100:00:00
