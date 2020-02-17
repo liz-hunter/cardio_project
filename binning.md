@@ -10,7 +10,9 @@
 ### Run CAT contigs
 
 Python-3.5.2
+
 prodigal/2.6.2
+
 DIAMOND/0.9.23
 ```
 CAT-master/CAT_pack/CAT contigs -c <input fasta> -d CAT-master/CAT_prepare_20190719/2019-07-19_CAT_database -t CAT-master/CAT_prepare_20190719/2019-07-19_taxonomy
@@ -32,7 +34,7 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 
 ### Make bowtie2 databases for the transcriptome (binned) and genome (unbinned) assemblies 
 
-Used bowtie2/2.3.5.1
+bowtie2/2.3.5.1
 ```
 bowtie2-build --threads 16 -f assembly.fasta database.out
 ```
@@ -118,6 +120,7 @@ samtools view -S -b out.sam > out.bam && samtools sort out.bam -o out_sorted.bam
 ### Metabat
 
 metabat/2.12.1
+
 checkm/1.0.5
 ```
 runMetaBat.sh -m 1500 contigs.fasta Bam/*.bam && \
