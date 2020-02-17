@@ -31,9 +31,9 @@ spades.py --memory 250 --threads 16 -k 55,77,99,127 \
 --pe2-2 trimmed_R2.fq \
 -o /outdir/path/
 ```
--Needs a lot of memory (250G) and about 10-12 days 
--Have to use export OMP_NUM_THREADS=16 to use multiple threads 
--And also specify the path to spades.py (/gpfs/runtime/opt/spades/3.13.0/bin/ on Bluewaves)
+- Needs a lot of memory (250G) and about 10-12 days 
+- Have to use export OMP_NUM_THREADS=16 to use multiple threads 
+- And also specify the path to spades.py (/gpfs/runtime/opt/spades/3.13.0/bin/ on Bluewaves)
 
 Can pick up spades with the continue function if it runs out of memory or fails..
 ```
