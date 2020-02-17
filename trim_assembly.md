@@ -1,4 +1,4 @@
-# Assembly and QC 
+# QC, Trimming, and Assembly
 
 #### Initial QC - FastQC
 
