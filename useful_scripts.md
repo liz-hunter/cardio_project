@@ -35,6 +35,18 @@ awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}'
 ### Show physical memory use by directory 
 ``` du -s * ```
 
+### Screen (allows something to run even if connection is interrupted/times out)
+```
+screen #opens a session
+ctrl + z # suspends a task
+bg (or fg) # moves suspended task to background/foreground
+jobs # lists jobs running in the background 
+ctrl + a, d #detaches from the session
+screen + r #resumes session
+```
+
+
+
 ### Count fastq reads
 ``` awk '{s++}END{print s/4}' file.fastq```
 
