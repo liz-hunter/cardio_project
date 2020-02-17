@@ -122,14 +122,11 @@ n=1; for x in *.fa; do mv $x  $n.fa; n=$(($n+1)); done
 
 #### Pull tRNAs (if necessary to do separately)
 ```
-conda activate maker (on this computer or trnascan on my computer)
+conda activate maker
 tRNAscan-SE -o out_tRNA.txt -m summary.txt sequences.fasta
 ```
-### Pannzer
 
-
-
-maker_opts.log
+#### maker_opts.log
 ```
 #-----Genome (these are always required)
 genome=RNA_CAT_combo_v2_1kb.fasta #genome sequence (fasta file or fasta embeded in GFF3 file)
