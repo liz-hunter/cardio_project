@@ -1,3 +1,5 @@
+CAT/Metabat run on the URI-Bluewaves server, all mapping on Brown Oscar (EPSCoR Condo)
+
 # **CAT** (used for Eukaryotic Binning)
 
 - Download CAT_pack in directory
