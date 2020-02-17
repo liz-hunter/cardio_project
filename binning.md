@@ -9,37 +9,19 @@
 
 ### Run CAT contigs
 
+Python-3.5.2
+prodigal/2.6.2
+DIAMOND/0.9.23
 ```
-#!/bin/bash
-#SBATCH -J catbat
-#SBATCH -t 1-00:00:00
-#SBATCH -N 1
-#SBATCH --mem=100G
-#SBATCH -n 16
-
-module load python-igraph/0.7.0-foss-2016b-Python-3.5.2
-module load prodigal/2.6.2
-module load DIAMOND/0.9.23-foss-2016b
-
 CAT-master/CAT_pack/CAT contigs -c <input fasta> -d CAT-master/CAT_prepare_20190719/2019-07-19_CAT_database -t CAT-master/CAT_prepare_20190719/2019-07-19_taxonomy
 ```
-
-~8hr runtime, needs a lot of memory
+~8-10hr runtime, needs a lot of memory (~100G)
 
 ### Run CAT add_names
 ```
-#!/bin/bash
-#SBATCH -J catbat
-#SBATCH -t 10:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-
-module load python-igraph/0.7.0-foss-2016b-Python-3.5.2
-module load prodigal/2.6.2
-module load DIAMOND/0.9.23-foss-2016b
-
 CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT-master/CAT_prepare_20190719/2019-07-19_taxonomy
 ```
+(super fast) 
 
 ##### Sorted output with textwrangler
 ##### Pulled headers with fasomerecords
@@ -50,21 +32,13 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 
 ### Make bowtie2 databases for the transcriptome (binned) and genome (unbinned) assemblies 
 
+Used bowtie2/2.3.5.1
 ```
-bowtie2/2.3.5.1
 bowtie2-build --threads 16 -f assembly.fasta database.out
 ```
 
 ### Map trimmed RNA reads to the transcriptome
 ```
-#!/bin/bash
-#SBATCH -J bowtie2
-#SBATCH -t 10:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-
-module load bowtie2/2.3.5.1
-
 bowtie2 -p 16 -q --very-sensitive \
 --al-conc RNA_mapped_reads \
 -x transcriptome_db \
@@ -74,19 +48,15 @@ bowtie2 -p 16 -q --very-sensitive \
 ### Map the read output from this (RNA_mapped_reads) to the full, unbinned genome assembly 
 
 ### Create a genome coverage file with bedtools
+
+bedtools/2.26.0
 ```
-#!/bin/bash
-#SBATCH -J samtools
-#SBATCH -t 1-00:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-
-module load bedtools/2.26.0
-
 bedtools genomecov -bg -ibam DNA_mapped_sorted.bam -g assembly.fasta > out.bed
 ```
 
 ### Sort by contigs with high coverage from the binned transcriptome reads in R
+
+R version 1.2.5019
 ```
 library('dplyr')
 
@@ -122,22 +92,14 @@ write.table(sorted_cutoff, "cov.txt", sep='\t', quote = FALSE)
 
 ### Make Bowtie database from Assembly
 
+bowtie2/2.3.0
 ``` 
 bowtie2-build --threads 16 -f all_contigs.fasta all_contigs_db ```
 ```
 
-### Map Trimmed Reads to the Assembly Database
-(the Sam files are the necessary output here)
+### Map Trimmed Reads to the Assembly Database to get a sam file
 
 ```
-#!/bin/bash
-#SBATCH -J bowtie2
-#SBATCH -t 10:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-
-module load bowtie2/2.3.0
-
 bowtie2 -p 16 -q --very-sensitive \
 --al-conc aligned_reads_out.fasta \
 -x full_assembly.fasta \
@@ -148,31 +110,16 @@ bowtie2 -p 16 -q --very-sensitive \
 
 ### Sam to Bam + Bam Sort
 
+samtools/1.9
 ```
-#!/bin/bash
-#SBATCH -J samtools
-#SBATCH -t 1-00:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-
-module load samtools/1.9
-
 samtools view -S -b out.sam > out.bam && samtools sort out.bam -o out_sorted.bam
 ```
 
 ### Metabat
+
+metabat/2.12.1
+checkm/1.0.5
 ```
-#!/bin/bash
-#SBATCH --time=100:00:00
-#SBATCH --nodes=1 
-#SBATCH --ntasks-per-node=20
-
-module load metabat/2.12.1-foss-2018a
-module load checkm/1.0.5
-
-echo "START"
-date
-
 runMetaBat.sh -m 1500 contigs.fasta Bam/*.bam && \
 #makes the depth file
 
@@ -181,10 +128,6 @@ metabat2 -i contigs.fasta -m 1500 -a contigs.fasta.depth.txt -o /Bins/bin1
 
 checkm lineage_wf -t 20 -x fa /Bins/ Bins/Checkm/
 #gives lineage guess for the bins
-
-
-echo "DONE"
-date
 ```
 
 #### Can use Checkm functionality to check for SSUs
