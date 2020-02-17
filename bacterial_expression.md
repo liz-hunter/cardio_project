@@ -1,9 +1,9 @@
 # Bacterial Expression Pipeline
 **Didn't end up using this analysis - coverage wasn't high enough to provide meaningful output, the most highly expressed genes were rRNAs with both STAR and HISAT2**
 
-## STAR
+# STAR
 
-#### Creating the Genome Index
+### Creating the Genome Index
 
 **STAR/2.5.3a, gcc/6.1.0**
 ```
@@ -27,7 +27,7 @@ STAR --runThreadN 16 \
 - used 9 for alphas and beta, 8 for bac (genomeSAindexNbases)
 - reordered the both sets of alpha contigs (now named numerically by size - largest to smallest)
 
-#### Mapping
+### Mapping
 
 ```
 STAR --runThreadN 16 \
@@ -47,9 +47,9 @@ STAR --runThreadN 16 \
 - add --alignIntronMax 1 for bacteria (no splices)
 - want column 2 from the ReadsPerGene.out.tab file, columns 3 and 4 are + and - strand specific counts
 
-#### Convert to Usable Format with R
+### Convert to Usable Format with R
 
-##### Merge the KASS and Prokka annotations with the ordered counts
+### Merge the KASS and Prokka annotations with the ordered counts
 
 ```
 KASS <- read.table("KASS.txt",
@@ -64,7 +64,7 @@ merged_all <- merge(merged_beta,prokka,by="GENE_ID")
 write.table(merged_all, "merged_all.txt", sep='\t')
 ```
 
-##### Convert to DeSeq2 format
+### Convert to DeSeq2 format
 
 ```
 ff <- list.files( path = "./counts", pattern = "*ReadsPerGene.out.tab$", full.names = TRUE )
@@ -76,16 +76,16 @@ colnames(counts) <- ff
 row.names(counts) <- counts.files[[1]]$V1
 ```
 
-## HISAT2
+# HISAT2
 
-#### Index the genomes
+### Index the genomes
 
 **HISAT2/2.0.4**
 ```
 hisat2-build genome.fasta index/index.fna
 ```
 
-##### Mapping
+### Mapping
 ```
 hisat2 -p 16 --un-conc results/aligned_hisat -x index.fna \
 -1 forward.fastq \
@@ -93,7 +93,7 @@ hisat2 -p 16 --un-conc results/aligned_hisat -x index.fna \
 -S results/hisat.sam
 ```
 
-##### Sort and stuff
+### Sort and stuff
 ```
 #!/bin/bash
 #SBATCH -J samtools
@@ -108,7 +108,7 @@ module load SAMtools/1.9-foss-2018b
 samtools view -S -b hisat.sam > hisat.bam | samtools sort -n hisat.bam -o hisat_sorted.bam
 ```
 
-#### featureCount
+### featureCount
 
 **Subread/1.6.3**
 ```
