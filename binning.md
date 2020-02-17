@@ -48,6 +48,8 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 
 # RNA-Coverage Binning (also used for Eukaryotic Binning)
 
+
+
 # **Metabat** (used for Prokaryotic Binning)
 
 ### Make Bowtie database from Assembly
