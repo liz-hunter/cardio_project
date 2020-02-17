@@ -1,7 +1,8 @@
 # Running Blast on a Server (without a taxonomy database)
 
 ### Split file into pieces and rename numerically
-```awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%[chunks of how many sequences]==0){file=sprintf("%d_split.fa",n_seq);} print >> file; n_seq++; next;} { print >> file; close(file)}' < [input.fasta]
+```
+awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%[chunks of how many sequences]==0){file=sprintf("%d_split.fa",n_seq);} print >> file; n_seq++; next;} { print >> file; close(file)}' < [input.fasta]
 ```
 ```
 n=1; for x in *.fa; do mv $x  $n.fa; n=$(($n+1)); done
