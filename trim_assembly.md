@@ -46,3 +46,7 @@ spades.py --continue -o /outdir/path
 ```
 stats.sh in=contigs.fasta
 ```
+
+### Alphaproteobacterial re-assembly 
+
+After binning (see binning.md), the bacterial endosymbiont was reassembled with Geneious v9.1.8 de novo assembly function (Highest Sensitivity/Slow)
