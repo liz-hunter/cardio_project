@@ -348,4 +348,28 @@ sub load{
 }
 #-----------------------------------------------------------------------------
 ```
+- listmapcolorassign.py (compare/color overlap and differences between two files)
+```
+#! /usr/bin/env python
+Outfile=open('all_assigned.txt', 'w')
+#bac blue
+#buc yellow
+#both green
+entry=[line.strip() for line in open('entry1.txt')]
+entry2=[line.strip() for line in open('entry2.txt')]
 
+with open('all_entry.txt') as Infile:
+	for line in Infile:
+		#clam=str(line)
+		pop=str(line.strip())
+		if pop in entry and pop in entry2:
+			Outfile.write(pop+'\t'+'both'+'\n')
+		elif pop in entry and pop not in entry2:
+			Outfile.write(pop+'\t'+'entry1'+'\n')
+		elif pop not in entry and pop in entry2:
+				Outfile.write(pop+'\t'+'entry2'+'\n')
+		else:
+			print('Error')
+
+Outfile.close()
+```
