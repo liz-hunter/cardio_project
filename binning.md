@@ -122,19 +122,8 @@ write.table(sorted_cutoff, "cov.txt", sep='\t', quote = FALSE)
 
 ### Make Bowtie database from Assembly
 
-``` #!/bin/bash
-#SBATCH -J Bow2Build
-#SBATCH --account=epscor-condo
-#SBATCH -t 10:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH --constraint=intel
-#SBATCH --mail-type=END
-#SBATCH --mail-user=liz.hunter1122@gmail.com
-
-module load bowtie2/2.3.0
-
-bowtie2-build --threads 16 -f /users/ehunter6/data/ehunter6/CardioDNA/UnbinAssembly/all_contigs.fasta all_contigs.fna ```
+``` 
+bowtie2-build --threads 16 -f all_contigs.fasta all_contigs_db ```
 ```
 
 ### Map Trimmed Reads to the Assembly Database
@@ -153,8 +142,8 @@ bowtie2 -p 16 -q --very-sensitive \
 --al-conc aligned_reads_out.fasta \
 -x full_assembly.fasta \
 --no-unal -S out.sam \
--1 trimmed_1F.fastq \
--2 trimmed_1R.fastq \
+-1 trimmed_1F.fastq,trimmed_2F.fastq,trimmed_3F.fastq \
+-2 trimmed_1R.fastq,trimmed_2R.fastq,trimmed_3R.fastq \
 ```
 
 ### Sam to Bam + Bam Sort
@@ -168,7 +157,7 @@ bowtie2 -p 16 -q --very-sensitive \
 
 module load samtools/1.9
 
-samtools view -S -b BP4.sam > BamFiles/BP4_paired.bam && samtools sort BamFiles/BP4_paired.bam -o Bam/BP4_paired_sorted.bam
+samtools view -S -b out.sam > out.bam && samtools sort out.bam -o out_sorted.bam
 ```
 
 ### Metabat
@@ -184,7 +173,7 @@ module load checkm/1.0.5
 echo "START"
 date
 
-runMetaBat.sh -m 1500 -o Bin1/bin1 contigs.fasta Bam/*.bam && \
+runMetaBat.sh -m 1500 contigs.fasta Bam/*.bam && \
 #makes the depth file
 
 metabat2 -i contigs.fasta -m 1500 -a contigs.fasta.depth.txt -o /Bins/bin1
