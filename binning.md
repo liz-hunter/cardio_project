@@ -86,7 +86,7 @@ module load bedtools/2.26.0
 bedtools genomecov -bg -ibam DNA_mapped_sorted.bam -g assembly.fasta > out.bed
 ```
 
-### Sort by contigs with high coverage from the binned transcriptome reads (greater than 50%) in R
+### Sort by contigs with high coverage from the binned transcriptome reads in R
 ```
 library('dplyr')
 
