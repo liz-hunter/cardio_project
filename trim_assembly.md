@@ -1,6 +1,8 @@
 # QC, Trimming, and Assembly
 
-#### Initial QC - FastQC
+All run on the Brown University Oscar Server - EPSCoR Condo
+
+### Initial QC - FastQC
 
 ```
 #!/bin/bash
@@ -8,13 +10,12 @@
 #SBATCH -N 1
 #SBATCH -n 16
 #SBATCH -t 6:00:00
-##SBATCH --account=epscor-condo
 
 module load fastqc
 fastqc *.fastq
 ```
 
-#### TrimmomaticPE
+### TrimmomaticPE
 
 ``` #!/bin/bash
 #SBATCH -J fastQC
@@ -36,7 +37,6 @@ Used larger Kmers - more optimal for 150x150 chemistry Illumina runs
 ```
 #!/bin/bash
 #SBATCH -J spades
-#SBATCH --account=epscor-condo
 #SBATCH -t 10-00:00:00
 #SBATCH -N 1
 #SBATCH --mem=250G
@@ -57,7 +57,6 @@ Can pick up spades with the continue function if it runs out of memory or fails.
 ```
 #!/bin/bash
 #SBATCH -J spades
-#SBATCH --account=epscor-condo
 #SBATCH -t 10-00:00:00
 #SBATCH -N 1
 #SBATCH --mem=250G
@@ -71,14 +70,13 @@ export OMP_NUM_THREADS=16
 -o /outdir/path
 ```
 
-#### Check assembly stats with BBmap
+### Check assembly stats with BBmap
 ```
 #!/bin/bash
 #SBATCH -J bbstat
 #SBATCH -N 1
 #SBATCH -n 16
 #SBATCH -t 01:00:00
-##SBATCH --account=epscor-condo
 
 module load bbmap/38.23
 stats.sh in=contigs.fasta
