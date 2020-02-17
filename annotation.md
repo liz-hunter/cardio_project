@@ -206,3 +206,10 @@ clean_try=0 #remove all data from previous run before retrying, 1 = yes, 0 = no
 clean_up=0 #removes theVoid directory with individual analysis files, 1 = yes, 0 = no
 TMP= #specify a directory other than the system default temporary directory for temporary files
 ```
+
+# Annotation of alphaproteobacterial endosymbiont
+
+- annotated with a custom database of complete and closely related bacterial genomes (predicted proteins)
+```
+prokka --outdir alpha_out --proteins complete_rickettsiales_db.faa --prefix alpha alpha.fasta
+```
