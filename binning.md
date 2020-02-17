@@ -131,3 +131,10 @@ checkm lineage_wf -t 20 -x fa /Bins/ Bins/Checkm/
 
 #### Can use Checkm functionality to check for SSUs
 ``` checkm ssu_finder -x .fa bin1.22.fa . ssu/ ```
+
+### Completeness Assessments
+
+#### BUSCO (Eukaryote)
+
+
+#### MiGA / Checkm (Prokaryote)
