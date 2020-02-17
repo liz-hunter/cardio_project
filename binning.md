@@ -135,6 +135,20 @@ checkm lineage_wf -t 20 -x fa /Bins/ Bins/Checkm/
 ### Completeness Assessments
 
 #### BUSCO (Eukaryote)
+**busco/3.0.2, augustus/3.3, hmmer/3.1b2, blast/2.7.1+, perl**
+```
+export BUSCO_CONFIG_FILE="/gpfs/runtime/opt/busco/3.0.2/src/busco/config/config.ini"
+export AUGUSTUS_CONFIG_PATH="/users/ehunter6/data/ehunter6/BUSCO/augustus/config"
+#need to export these paths (Oscar)
 
+python run_BUSCO.py -i proteins.fasta -o proteins_out -l protists_ensembl -m prot
+```
 
 #### MiGA / Checkm (Prokaryote)
+- MiGA was used online 
+- CheckM qa workflow 
+
+```
+checkm taxon_set <rank> <taxon> <marker file>
+checkm analyze <marker file> <bin folder> <output folder>
+checkm qa <marker file> <output folder> ```
