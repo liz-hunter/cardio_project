@@ -194,7 +194,6 @@ ncbi-genome-download --dry-run --taxid alpha_taxid.txt --format fasta --assembly
 GToTree -a all_accession.txt -f fasta_files.txt -H Universal -t -L Species,Strain -m genome_to_id_map.tsv -j 4 -o GToTree_out
 ```
 - can use the H flag to specify the hmm model to use (gtt-hmms to view all) or use the Universal
-
 - fasta_files.txt is a list of the relative paths to the genomes you are providing (provide full assembly - not proteins or predicted CDS, of your genomes of interest and an outgroup - used E. coli here)
 - accessions.txt is a list of genbank accession IDs (ex. GCF_000006965.1) you want to include, and it will automatically pull what it needs from NCBI
 - genome_to_id_map.tsv is to provide new names for the sequences you are adding, just simple 2 column format
@@ -202,19 +201,19 @@ GToTree -a all_accession.txt -f fasta_files.txt -H Universal -t -L Species,Strai
 - -j is how many jobs to run in parallel
 
 
-# Gene Trees of Any Variety
+# Eukaryotic Apicoplast Trees
 
 #### Runs the blast, pulls the results column, deduplicates it, and grabs the sequences from the master file (locally)
 ```
 for f in $(cat list.txt); do blastp -query apicoplastgenes/"$f".faa -db 1258_db/1258_PROKKA_01052020.faa -outfmt 6 -evalue .1 -max_target_seqs 3 > "$f"_1258_blast.txt && cut -f2 "$f"_1258_blast.txt | sort -u > "$f"_1258_head.txt && fasomerecords 1258_PROKKA_01052020.faa "$f"_1258_head.txt done_1258/"$f"_1258_final.txt ; done
 ```
 
-#### Concatenates the files of interest (locally)
+#### Concatenates the files of interest
 ```
 for f in $(cat list.txt); do cat apicoplastgenes/"$f".faa done_1212/"$f"_1212_final.txt done_1258/"$f"_1258_final.txt done_1263/"$f"_1263_final.txt > concat/"$f"_cat_apico.fasta; done
 ```
 
-##### Remove duplicate sequences (with different headers) if necessary and rename any duplicate headers so RAxML doesn't shit a brick
+#### Remove duplicate sequences (with different headers) if necessary and rename any duplicate headers (adjusted the e-value for blast and didn't end up needing to do this)
 ```
 for f in $(cat list.txt); do sed 's/*//g' concat_final/"$f"_cat_apico.fasta > concat_final/"$f"_cat_apico_destar.fasta ; done
 ```
@@ -224,37 +223,31 @@ for f in $(cat list.txt); do cd-hit -i concat_final/"$f"_cat_apico_destar.fasta 
 perl -pe 's/$/_$seen{$_}/ if ++$seen{$_}>1 and /^>/; ' concat_final/cdhit/"$f"_cat_apico_destar_100.fasta > concat_final/dedup/"$f"_cat_apico_destar_100_dedup.fasta ; done
 ```
 
-##### Move the final concatenated fastas up to a server
+#### Move the final concatenated fastas up to a server (used Bluewaves)
 
-#### Run the alignments, trimming, and RAxML trees in parallel (on a server)
+### Run the alignments, trimming, and RAxML trees in parallel (on a server)
+
+**mafft/7.215, trimAl/1.4.1-GCC-8.2.0-2.31.1, raxml/8.2.3**
 ```
-#!/bin/bash
-#SBATCH -J mafft_raxml
-#SBATCH -t 3-00:00:00
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH --array=1-35%6
-
-echo "START"
-date
-
-module load mafft/7.215
-module load trimAl/1.4.1-GCC-8.2.0-2.31.1
-module load raxml/8.2.3
-
 FILE=$(head -n $SLURM_ARRAY_TASK_ID list.txt | tail -n 1)
 
 mafft --auto concat_dedup/${FILE}_cat_apico_dedup.fasta > aligned/${FILE}_aligned.fasta && \
 trimal -in aligned/${FILE}_aligned.fasta -out aligned_trimmed/${FILE}_aligned_trimmed.fasta -gt .7 -cons 60 && \
 raxmlHPC-PTHREADS -m PROTGAMMALG -T 8 -f a -x 1034 -p 1034 -N 100 -s aligned_trimmed/${FILE}_aligned_trimmed.fasta -n ${FILE}.tre
-
-echo "DONE"
-date
 ```
+- use an array to run this in parallel for every file
+- will take a couple hours (longer if more trees/bigger proteins - 35 here, relatively small job)
+- need to provide a list.txt file with all the variable names
 
-#### Parse these manually for paralogs
+### Parse these manually for paralogs
 - remove paralogs (should have one copy of every gene in the final fastas)
-- realign those that were edited to remove paralogs
-- make sure all the headers are identical for each species (for every protein)
-- concatenate with catfasta2phyml program
-- run tree (IQtree = fast but RAxML is better)
+- make sure all the headers are identical for each species (for every protein across all files)
+- realign and trim new parsed fastas 
+- use a less stringent trimal script (-gt .01)
+
+### Concatenate alignments with catfasta2phyml program 
+``` perl catfasta2phyml.pl -c -f -v *_individual_alignments.fasta > concat_alignment.fasta ```
+
+### Run final tree (RAxML)
+
+```raxmlHPC-PTHREADS -m PROTGAMMALG -T 8 -f a -x 1034 -p 1034 -N 100 -s concat_alignment2.fasta -n concat_alignment2.tre```
