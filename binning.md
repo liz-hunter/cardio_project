@@ -10,9 +10,7 @@
 ### Run CAT contigs
 
 Python-3.5.2
-
 prodigal/2.6.2
-
 DIAMOND/0.9.23
 ```
 CAT-master/CAT_pack/CAT contigs -c <input fasta> -d CAT-master/CAT_prepare_20190719/2019-07-19_CAT_database -t CAT-master/CAT_prepare_20190719/2019-07-19_taxonomy
