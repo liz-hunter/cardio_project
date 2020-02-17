@@ -6,3 +6,21 @@
 
 ### Renames split files sequentially 
 ```n=1; for x in *.fa; do mv $x  $n.fa; n=$(($n+1)); done```
+
+### Replaces fasta headers with names from a tab separated file
+
+```awk -f replace.awk list.txt file.fasta > output.txt```
+replace.awk:
+```
+NR == FNR {
+  rep[$1] = $2
+  next
+} 
+
+{
+    for (key in rep) {
+      gsub(key, rep[key])
+    }
+    print
+}
+```
