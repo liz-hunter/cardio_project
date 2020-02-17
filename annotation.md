@@ -209,7 +209,7 @@ TMP= #specify a directory other than the system default temporary directory for 
 
 # Annotation of alphaproteobacterial endosymbiont
 
-- annotated with a custom database of complete and closely related bacterial genomes (predicted proteins)
 ```
 prokka --outdir alpha_out --proteins complete_rickettsiales_db.faa --prefix alpha alpha.fasta
 ```
+- annotated with a custom database of complete and closely related bacterial genomes (predicted proteins)
