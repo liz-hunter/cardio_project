@@ -48,6 +48,74 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 
 # RNA-Coverage Binning (also used for Eukaryotic Binning)
 
+### Make bowtie2 databases for the transcriptome (binned) and genome (unbinned) assemblies 
+
+```
+bowtie2/2.3.5.1
+bowtie2-build --threads 16 -f assembly.fasta database.out
+```
+
+### Map trimmed RNA reads to the transcriptome
+```
+#!/bin/bash
+#SBATCH -J bowtie2
+#SBATCH -t 10:00:00
+#SBATCH -N 1
+#SBATCH -n 16
+
+module load bowtie2/2.3.5.1
+
+bowtie2 -p 16 -q --very-sensitive \
+--al-conc RNA_mapped_reads \
+-x transcriptome_db \
+-1 RNA_1F.fq,RNA_2F.fq,RNA_3F.fq \
+-2 RNA_1R.fq,RNA_2R.fq,RNA_3R.fq
+```
+### Map the read output from this (RNA_mapped_reads) to the full, unbinned genome assembly 
+
+### Create a genome coverage file with bedtools
+```
+#!/bin/bash
+#SBATCH -J samtools
+#SBATCH -t 1-00:00:00
+#SBATCH -N 1
+#SBATCH -n 16
+
+module load bedtools/2.26.0
+
+bedtools genomecov -bg -ibam DNA_mapped_sorted.bam -g assembly.fasta > out.bed
+```
+
+### Sort by contigs with high coverage from the binned transcriptome reads (greater than 50%) in R
+```
+library('dplyr')
+
+out <- read.delim("out_2.bed", stringsAsFactors=FALSE)
+#read in bedfile from genomecov -bg with added headers (SEQID, START, END, COV)
+sorted <- out %>% group_by(SEQID) %>% filter(COV == max(COV))
+filter <- select(sorted,-c(START,END))
+filter_byCOV <- filter[order(filter$COV),]
+outlier_removed <- filter_byCOV[-3034,] #3034 is the column number to remove
+#pulls out the highest coverage per contig
+#optionally create a file without the unnecessary columns and sorts it by coverage
+
+mean(sorted$COV)
+median.default(sorted$COV)
+#averages from the sorted dataset
+
+write.table(filter_byCOV, "cov.txt", sep='\t', quote = FALSE)
+#cumulative fraction chart
+plot(ecdf(outlier$COV))
+
+cardio_CAT <- read.csv("genome_cov/cardio_CAT_v2_head.txt", sep="", stringsAsFactors=FALSE)
+View(cardio_CAT)
+super <- merge(sorted, cardio_CAT, by=c('SEQID') )
+#read in and compare to headers from the CAT sorted bin
+
+sorted_cutoff <- sorted[sorted$COV>=50,]
+#pull contigs by a cutoff value (in this case 50)
+write.table(sorted_cutoff, "cov.txt", sep='\t', quote = FALSE)
+```
 
 
 # **Metabat** (used for Prokaryotic Binning)
