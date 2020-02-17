@@ -9,9 +9,7 @@
 
 ### Run CAT contigs
 
-Python-3.5.2
-prodigal/2.6.2
-DIAMOND/0.9.23
+**programs: Python-3.5.2, prodigal/2.6.2, DIAMOND/0.9.23**
 ```
 CAT-master/CAT_pack/CAT contigs -c <input fasta> -d CAT-master/CAT_prepare_20190719/2019-07-19_CAT_database -t CAT-master/CAT_prepare_20190719/2019-07-19_taxonomy
 ```
@@ -32,7 +30,7 @@ CAT-master/CAT_pack/CAT add_names -i out.CAT.ORF2LCA.txt -o tax_named.txt -t CAT
 
 ### Make bowtie2 databases for the transcriptome (binned) and genome (unbinned) assemblies 
 
-bowtie2/2.3.5.1
+**bowtie2/2.3.5.1**
 ```
 bowtie2-build --threads 16 -f assembly.fasta database.out
 ```
@@ -49,14 +47,14 @@ bowtie2 -p 16 -q --very-sensitive \
 
 ### Create a genome coverage file with bedtools
 
-bedtools/2.26.0
+**program: bedtools/2.26.0**
 ```
 bedtools genomecov -bg -ibam DNA_mapped_sorted.bam -g assembly.fasta > out.bed
 ```
 
 ### Sort by contigs with high coverage from the binned transcriptome reads in R
 
-R version 1.2.5019
+**program: R version 1.2.5019**
 ```
 library('dplyr')
 
@@ -92,7 +90,7 @@ write.table(sorted_cutoff, "cov.txt", sep='\t', quote = FALSE)
 
 ### Make Bowtie database from Assembly
 
-bowtie2/2.3.0
+**program: bowtie2/2.3.0**
 ``` 
 bowtie2-build --threads 16 -f all_contigs.fasta all_contigs_db ```
 ```
@@ -110,16 +108,14 @@ bowtie2 -p 16 -q --very-sensitive \
 
 ### Sam to Bam + Bam Sort
 
-samtools/1.9
+**program: samtools/1.9**
 ```
 samtools view -S -b out.sam > out.bam && samtools sort out.bam -o out_sorted.bam
 ```
 
 ### Metabat
 
-metabat/2.12.1
-
-checkm/1.0.5
+**programs: metabat/2.12.1, checkm/1.0.5**
 ```
 runMetaBat.sh -m 1500 contigs.fasta Bam/*.bam && \
 #makes the depth file
