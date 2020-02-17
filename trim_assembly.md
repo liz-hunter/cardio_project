@@ -25,10 +25,10 @@ fastqc *.fastq
 
 module load trimmomatic/0.36
 
-TrimmomaticPE -threads 16 /users/ehunter6/data/ehunter6/CardioDNA/DNA/XRICL_20190308_K00134_IL100122607_ATGTCA-BP4-27_L008_R1.fastq /users/ehunter6/data/ehunter6/CardioDNA/DNA/XRICL_20190308_K00134_IL100122607_ATGTCA-BP4-27_L008_R2.fastq -baseout BP4_trim.fastq ILLUMINACLIP:/users/ehunter6/data/ehunter6/scripts/TruSeq3-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:100 HEADCROP:5 ```
+TrimmomaticPE -threads 16 F1.fastq R1.fastq -baseout out1.fastq ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:100 HEADCROP:5 
 ```
 
-**Repeat FastQC**
+**Repeat FastQC to ensure quality and removal of adapters**
 
 #### Spades
 Used larger Kmers - more optimal for 150x150 chemistry Illumina runs
