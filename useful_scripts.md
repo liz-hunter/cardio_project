@@ -11,7 +11,7 @@
 
 ```awk -f replace.awk list.txt file.fasta > output.txt```
 
-replace.awk:
+**replace.awk:**
 ```
 NR == FNR {
   rep[$1] = $2
@@ -25,3 +25,7 @@ NR == FNR {
     print
 }
 ```
+
+### Make fastas single-line (preserves headers)
+```
+awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < [input.fa] > [output.fa]```
