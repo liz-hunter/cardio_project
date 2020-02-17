@@ -31,7 +31,8 @@ TrimmomaticPE -threads 16 F1.fastq R1.fastq -baseout out1.fastq ILLUMINACLIP:Tru
 
 **Repeat FastQC to ensure quality and removal of adapters**
 
-#### Spades
+### Spades
+
 Used larger Kmers - more optimal for 150x150 chemistry Illumina runs
 
 ```
